@@ -1,0 +1,46 @@
+substitutions:
+  _REGION: 'europe-west1'
+  _SERVICE_NAME: 'noita-backend'
+  _DB_USER: ''
+  _DB_NAME: ''
+  _CLOUDSQL_INSTANCE: ''
+  _REPO: 'europe-west1-docker.pkg.dev/noita-website/noita-website'
+
+steps:
+  # Build the image with short SHA tag
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'build',
+        '-t', '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA',
+        '.'
+      ]
+
+  # Push the image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    args:
+      [
+        'push',
+        '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA'
+      ]
+
+  # Deploy to Cloud Run with Cloud SQL connection and secrets
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: 'gcloud'
+    args:
+      [
+        'run', 'deploy', '${_SERVICE_NAME}',
+        '--image=${_REPO}/${_SERVICE_NAME}:$SHORT_SHA',
+        '--region=${_REGION}',
+        '--platform=managed',
+        '--no-allow-unauthenticated',
+        '--add-cloudsql-instances=${_CLOUDSQL_INSTANCE}',
+        '--set-env-vars=DB_USER=${_DB_USER},DB_NAME=${_DB_NAME},DB_SSL=true',
+        '--set-secrets=DB_PASS=db-password:latest',
+        '--port=8080'
+      ]
+
+images:
+  - '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA'
+
+timeout: 900s

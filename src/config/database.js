@@ -1,14 +1,21 @@
-import { Sequelize } from 'sequelize';
-import dotenv from 'dotenv/config';
+const { Sequelize } = require('sequelize');
 
-// Database connection we want to use underscored naming strategy
 const sequelize = new Sequelize(
-  `postgres://${process.env.DB_USER}:${process.env.DB_PASS}@localhost:5432/${process.env.DB_NAME}`,
+  process.env.DB_NAME,
+  process.env.DB_USER,
+  process.env.DB_PASS,
   {
-    define: {
-      underscored: true,
-    },
+    host: process.env.DB_HOST || '127.0.0.1',
+    port: 5432,
+    dialect: 'postgres',
+    dialectOptions: process.env.DB_SSL === 'true' ? {
+      ssl: {
+        require: true,
+        rejectUnauthorized: false, // allow self-signed
+      },
+    } : {},
+    logging: false, // disable query logging
   }
 );
 
-export default sequelize;
+module.exports = sequelize;
