@@ -6,9 +6,9 @@ substitutions:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/982182162415/secrets/DB_USER/versions/latest
+  - versionName: projects/noita-website/secrets/DB_USER/versions/latest
     env: 'DB_USER'
-  - versionName: projects/982182162415/secrets/DB_NAME/versions/latest
+  - versionName: projects/noita-website/secrets/DB_NAME/versions/latest
     env: 'DB_NAME'
 
 options:
