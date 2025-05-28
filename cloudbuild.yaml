@@ -36,7 +36,7 @@ steps:
     entrypoint: 'gcloud'
     args:
       [
-        'run', 'deploy', '${_SERVICE_NAME}',
+        'beta', 'run', 'deploy', '${_SERVICE_NAME}',
         '--container=cloud-sql-proxy --image=gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.16.0 --args=--private-ip,--address=0.0.0.0,--port=5432,--structured-logs,${_CLOUDSQL_INSTANCE} --cpu=0.08 --memory=128Mi',
         '--container=app --image=${_REPO}/${_SERVICE_NAME}:$SHORT_SHA --port=8080 --set-env-vars=DB_USER=$$DB_USER,DB_PASS=$$DB_PASS,DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080 --set-secrets=DB_PASS=DB_PASS:latest --depends-on=cloud-sql-proxy --cpu=0.1 --memory=512Mi',
         '--region=${_REGION}',
