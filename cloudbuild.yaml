@@ -33,6 +33,7 @@ steps:
         '--image=${_REPO}/${_SERVICE_NAME}:$SHORT_SHA',
         '--region=${_REGION}',
         '--platform=managed',
+        '--service-account=noita-backend@noita-website.iam.gserviceaccount.com',
         '--no-allow-unauthenticated',
         '--add-cloudsql-instances=${_CLOUDSQL_INSTANCE}',
         '--set-env-vars=DB_USER=${_DB_USER},DB_NAME=${_DB_NAME},DB_SSL=true',
