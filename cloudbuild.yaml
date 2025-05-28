@@ -1,18 +1,13 @@
 substitutions:
   _REGION: 'europe-west1'
   _SERVICE_NAME: 'noita-backend'
-  _REPO: 'europe-west1-docker.pkg.dev/noita-website/noita-website'
-  _CLOUDSQL_INSTANCE: 'noita-website:europe-west1:noita-website-instance'
-
-availableSecrets:
-  secretManager:
-  - versionName: projects/noita-website/secrets/DB_USER/versions/latest
-    env: 'DB_USER'
-  - versionName: projects/noita-website/secrets/DB_NAME/versions/latest
-    env: 'DB_NAME'
+  _REPO: 'europe-west1-docker.pkg.dev/${PROJECT_ID}/noita-website'
+  _CLOUDSQL_INSTANCE: '${PROJECT_ID}:europe-west1:noita-website-instance'
 
 options:
   logging: CLOUD_LOGGING_ONLY
+  dynamicSubstitutions: true
+  automapSubstitutions: true
 
 steps:
   - name: 'gcr.io/cloud-builders/docker'
@@ -63,6 +58,12 @@ steps:
       ]
     secretEnv: ['DB_USER', 'DB_NAME']
 
+availableSecrets:
+  secretManager:
+  - versionName: projects/noita-website/secrets/DB_USER/versions/latest
+    env: 'DB_USER'
+  - versionName: projects/noita-website/secrets/DB_NAME/versions/latest
+    env: 'DB_NAME'
 
 images:
   - '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA'
