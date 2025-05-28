@@ -2,22 +2,21 @@ substitutions:
   _REGION: 'europe-west1'
   _SERVICE_NAME: 'noita-backend'
   _REPO: 'europe-west1-docker.pkg.dev/noita-website/noita-website'
+  _CLOUDSQL_INSTANCE: 'noita-website:europe-west1:noita-website-instance'
+
+availableSecrets:
+  secretManager:
+  - versionName: projects/982182162415/secrets/DB_PASS/versions/latest
+    env: 'DB_PASS'
+  - versionName: projects/982182162415/secrets/DB_USER/versions/latest
+    env: 'DB_USER'
+  - versionName: projects/982182162415/secrets/DB_NAME/versions/latest
+    env: 'DB_NAME'
 
 options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
-  # # Install dependencies
-  # - name: 'node:22' # Or your specific Node.js version
-  #   entrypoint: 'npm'
-  #   args: ['install']
-
-  # # Run tests
-  # - name: 'node:22'
-  #   entrypoint: 'npm'
-  #   args: ['test']
-
-  # Build the image with short SHA tag
   - name: 'gcr.io/cloud-builders/docker'
     args:
       [
@@ -26,7 +25,6 @@ steps:
         '.'
       ]
 
-  # Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
     args:
       [
@@ -34,22 +32,24 @@ steps:
         '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA'
       ]
 
-  # Deploy to Cloud Run with Cloud SQL connection and secrets
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
     entrypoint: 'gcloud'
     args:
-      [
+      [noita-website:europe-west1:noita-website-instance
         'run', 'deploy', '${_SERVICE_NAME}',
-        '--image=${_REPO}/${_SERVICE_NAME}:$SHORT_SHA',
+        '--container=cloud-sql-proxy --image=gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.16.0 --args=--private-ip,--address=0.0.0.0,--port=5432,--structured-logs,$$ --cpu=0.08 --memory=128Mi',
+        '--container=app --image=${_REPO}/${_SERVICE_NAME}:$SHORT_SHA --port=8080 --set-env-vars=DB_USER=$$DB_USER,DB_PASS=$$DB_PASS,DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080 --set-secrets=DB_PASS=DB_PASS:latest --depends-on=cloud-sql-proxy --cpu=0.1 --memory=512Mi',
         '--region=${_REGION}',
         '--platform=managed',
         '--service-account=noita-backend@noita-website.iam.gserviceaccount.com',
         '--no-allow-unauthenticated',
-        '--add-cloudsql-instances=${_CLOUDSQL_INSTANCE}',
-        '--set-env-vars=DB_USER=${_DB_USER},DB_NAME=${_DB_NAME},DB_SSL=true,SERVER_PORT=8080,USE_CLOUD_SQL_PROXY=true,CLOUDSQL_INSTANCE_CONNECTION_NAME=${_CLOUDSQL_INSTANCE}',
-        '--set-secrets=DB_PASS=DB_PASS:latest',
-        '--port=8080'
+        '--execution-environment=gen2',
+        '--cpu-boost',
+        '--ingress=all',
+        '--max-instances=1',
       ]
+    secretEnv: ['DB_PASS', 'DB_USER', 'DB_NAME']
+
 
 images:
   - '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA'

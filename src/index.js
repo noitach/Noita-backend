@@ -1,5 +1,4 @@
 import express from 'express';
-import dotenv from 'dotenv/config';
 import cors from 'cors';
 
 import sequelize from './config/database.js';
@@ -8,7 +7,7 @@ import router from './routers/indexRouter.js';
 
 const app = express();
 
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.SERVER_PORT || 3000;
 
 // Serve static files from the "public" directory
 app.use(express.static('public'));
@@ -44,4 +43,6 @@ app.use((err, req, res, next) => {
   res.status(500).send('Internal Server Error');
 });
 
-export default app;
+app.listen(PORT, () => {
+  console.log(`Server is running on http://localhost:${PORT}`);
+});
