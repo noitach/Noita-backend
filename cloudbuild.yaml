@@ -41,7 +41,7 @@ steps:
         '--region=${_REGION}',
         '--platform=managed',
         '--service-account=noita-backend@noita-website.iam.gserviceaccount.com',
-        '--no-allow-unauthenticated',
+        '--allow-unauthenticated',
         '--execution-environment=gen2',
         '--cpu-boost',
         '--max-instances=1',
