@@ -6,8 +6,6 @@ substitutions:
 
 availableSecrets:
   secretManager:
-  - versionName: projects/982182162415/secrets/DB_PASS/versions/latest
-    env: 'DB_PASS'
   - versionName: projects/982182162415/secrets/DB_USER/versions/latest
     env: 'DB_USER'
   - versionName: projects/982182162415/secrets/DB_NAME/versions/latest
@@ -58,10 +56,10 @@ steps:
         '--memory=512Mi',
         '--port=8080',
         '--depends-on=cloud-sql-proxy',
-        '--set-env-vars=DB_USER=$$DB_USER,DB_PASS=$$DB_PASS,DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080',
+        '--set-env-vars=DB_USER=$$DB_USER,DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080',
         '--set-secrets=DB_PASS=DB_PASS:latest'
       ]
-    secretEnv: ['DB_PASS', 'DB_USER', 'DB_NAME']
+    secretEnv: ['DB_USER', 'DB_NAME']
 
 
 images:
