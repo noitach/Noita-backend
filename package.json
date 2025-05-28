@@ -27,6 +27,7 @@
     "testcontainers": "^11.0.0"
   },
   "dependencies": {
+    "@google-cloud/cloud-sql-connector": "^1.8.1",
     "bcryptjs": "^3.0.2",
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
