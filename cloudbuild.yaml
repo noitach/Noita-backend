@@ -3,6 +3,9 @@ substitutions:
   _SERVICE_NAME: 'noita-backend'
   _REPO: 'europe-west1-docker.pkg.dev/noita-website/noita-website'
 
+options:
+  logging: CLOUD_LOGGING_ONLY
+
 steps:
   # Build the image with short SHA tag
   - name: 'gcr.io/cloud-builders/docker'
@@ -12,9 +15,6 @@ steps:
         '-t', '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA',
         '.'
       ]
-    options:
-      logging: CLOUD_LOGGING_ONLY
-
 
   # Push the image to Artifact Registry
   - name: 'gcr.io/cloud-builders/docker'
@@ -23,9 +23,6 @@ steps:
         'push',
         '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA'
       ]
-    options:
-      logging: CLOUD_LOGGING_ONLY
-
 
   # Deploy to Cloud Run with Cloud SQL connection and secrets
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
@@ -42,8 +39,6 @@ steps:
         '--set-secrets=DB_PASS=DB_PASS:latest',
         '--port=8080'
       ]
-    options:
-      logging: CLOUD_LOGGING_ONLY
 
 images:
   - '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA'
