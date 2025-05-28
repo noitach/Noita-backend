@@ -1,15 +1,15 @@
 import express from 'express';
-
-import postController from '../controllers/postController.js';
-
+import postController, { createPostController } from '../controllers/postController.js';
 import { auth } from '../middleware/auth.js';
 
-const router = express.Router();
+export function createPostRouter(controller = postController) {
+    const router = express.Router();
+    router.get('/', controller.getAllPosts);
+    router.get('/:id', auth, controller.getPost);
+    router.post('/', auth, controller.createPost);
+    router.put('/:id', auth, controller.updatePost);
+    router.delete('/:id', auth, controller.deletePost);
+    return router;
+}
 
-router.get('/', postController.getAllPosts);
-router.get('/:id', auth, postController.getPost);
-router.post('/', auth, postController.createPost);
-router.put('/:id', auth, postController.updatePost);
-router.delete('/:id', auth, postController.deletePost);
-
-export default router;
+export default createPostRouter();

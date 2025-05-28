@@ -7,6 +7,16 @@ options:
   logging: CLOUD_LOGGING_ONLY
 
 steps:
+  # Install dependencies
+  - name: 'node:22' # Or your specific Node.js version
+    entrypoint: 'npm'
+    args: ['install']
+
+  # Run tests
+  - name: 'node:22'
+    entrypoint: 'npm'
+    args: ['test']
+
   # Build the image with short SHA tag
   - name: 'gcr.io/cloud-builders/docker'
     args:
