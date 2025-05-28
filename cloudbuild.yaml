@@ -18,7 +18,8 @@ steps:
     args:
       [
         'build',
-        '-t', '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA', '${_REPO}/${_SERVICE_NAME}:latest',
+        '-t', '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA', 
+        '-t', '${_REPO}/${_SERVICE_NAME}:latest',
         '--cache-from', ' ${_REPO}/${_SERVICE_NAME}:latest',
         '.'
       ]
