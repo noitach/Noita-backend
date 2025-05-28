@@ -56,22 +56,14 @@ steps:
 
         '--container=app',
         '--image=${_REPO}/${_SERVICE_NAME}:$SHORT_SHA',
-        '--set-env-vars=DB_USER=$$DB_USER,DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080',
-        '--set-secrets=DB_PASS=DB_PASS:latest',
+        '--set-env-vars=DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080',
+        '--set-secrets=DB_PASS=DB_PASS:latest,DB_USER=DB_USER:latest',
         '--cpu=1',
         '--memory=512Mi',
         '--port=8080',
         '--startup-probe=initialDelaySeconds=10,periodSeconds=10,failureThreshold=3,tcpSocket.port=8080',
         '--depends-on=cloud-sql-proxy',
       ]
-    secretEnv: ['DB_USER', 'DB_NAME']
-
-availableSecrets:
-  secretManager:
-  - versionName: projects/noita-website/secrets/DB_USER/versions/latest
-    env: 'DB_USER'
-  - versionName: projects/noita-website/secrets/DB_NAME/versions/latest
-    env: 'DB_NAME'
 
 images:
   - '${_REPO}/${_SERVICE_NAME}:$SHORT_SHA'
