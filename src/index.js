@@ -9,8 +9,8 @@ const app = express();
 
 const PORT = process.env.SERVER_PORT || 3000;
 
-// Serve static files from the "public" directory under the "/static" path
-app.use('/static', express.static('public'));
+// Serve static files from the "public" directory under the "/" path
+app.use(express.static('public'));
 
 app.use(express.json({ limit: '10mb', extended: true }));
 
