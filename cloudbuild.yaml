@@ -48,8 +48,7 @@ steps:
         '--image=gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.16.0',
         '--cpu=0.08',
         '--memory=128Mi',
-        '--port=5432',
-        '--args=--private-ip,--address=0.0.0.0,--port=5432,--structured-logs,${_CLOUDSQL_INSTANCE}',
+        '--args=--address=0.0.0.0,--port=5432,--structured-logs,${_CLOUDSQL_INSTANCE}',
         '--startup-probe=timeoutSeconds=1,periodSeconds=10,failureThreshold=3,tcpSocket.port=5432',
 
         '--container=app',
@@ -59,7 +58,8 @@ steps:
         '--port=8080',
         '--depends-on=cloud-sql-proxy',
         '--set-env-vars=DB_USER=$$DB_USER,DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080',
-        '--set-secrets=DB_PASS=DB_PASS:latest'
+        '--set-secrets=DB_PASS=DB_PASS:latest',
+        '--startup-probe=initialDelaySeconds=10,periodSeconds=10,failureThreshold=3,tcpSocket.port=8080'
       ]
     secretEnv: ['DB_USER', 'DB_NAME']
 
