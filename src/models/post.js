@@ -1,5 +1,4 @@
 import { Model, DataTypes } from 'sequelize';
-import sequelize from '../config/database.js';
 
 export function initPostModel(sequelizeInstance) {
   class Post extends Model { }
@@ -41,7 +40,3 @@ export function initPostModel(sequelizeInstance) {
   );
   return Post;
 }
-
-const Post = initPostModel(sequelize);
-
-export default Post;
