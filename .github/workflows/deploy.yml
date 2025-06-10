@@ -87,6 +87,11 @@ jobs:
             type=sha
             type=raw,value=latest
 
+      - name: Extract SHA tag only
+        id: extract-tag
+        run: |
+          echo "sha_tag=$(echo "${{ steps.meta.outputs.tags }}" | tr ',' '\n' | grep sha-)" >> "$GITHUB_OUTPUT"
+
       - name: Build and push Docker image
         uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # ratchet:docker/build-push-action@v5
         with:
@@ -104,7 +109,7 @@ jobs:
         with:
           service: ${{ env.CLOUD_RUN_SERVICE_NAME }}
           region: ${{ env.GCP_REGION }}
-          image: ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.DOCKER_IMAGE }}:latest
+          image: ${{ steps.extract-tag.outputs.sha_tag }}
           flags: |
             '--platform=managed'
             '--service-account=${{ env.CLOUD_RUN_SERVICE_ACCOUNT }}'
