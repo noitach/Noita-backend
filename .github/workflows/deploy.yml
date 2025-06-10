@@ -110,7 +110,7 @@ jobs:
       - name: Deploy to Cloud Run
         id: deploy
         run: |
-          gcloud run deploy ${{ env.CLOUD_RUN_SERVICE_NAME }} \
+          URL=$(gcloud run deploy ${{ env.CLOUD_RUN_SERVICE_NAME }} \
             --region ${{ env.GCP_REGION }} \
             --platform managed \
             --service-account ${{ env.CLOUD_RUN_SERVICE_ACCOUNT }} \
@@ -135,7 +135,9 @@ jobs:
             --port=8080 \
             --add-volume-mount=volume=images,mount-path=/app/public/images \
             --startup-probe=initialDelaySeconds=10,periodSeconds=10,failureThreshold=3,tcpSocket.port=8080 \
-            --depends-on=cloud-sql-proxy
+            --depends-on=cloud-sql-proxy)
+
+          echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: Show deployment URL
         run: echo "Deployed to ${{ steps.deploy.outputs.url }}"
