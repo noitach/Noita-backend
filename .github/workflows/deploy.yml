@@ -136,7 +136,7 @@ jobs:
             --add-volume-mount=volume=images,mount-path=/app/public/images \
             --startup-probe=initialDelaySeconds=10,periodSeconds=10,failureThreshold=3,tcpSocket.port=8080 \
             --depends-on=cloud-sql-proxy)
-
+          echo "URL: $URL"
           echo "url=$URL" >> $GITHUB_OUTPUT
 
       - name: Show deployment URL
