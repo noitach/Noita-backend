@@ -34,11 +34,11 @@ export const config: AppConfig = {
         process.env.NODE_ENV === 'production'
           ? false
           : (sql: string) => {
-            if (process.env.NODE_ENV === 'development') {
-              // eslint-disable-next-line no-console
-              console.log(sql);
-            }
-          },
+              if (process.env.NODE_ENV === 'development') {
+                // eslint-disable-next-line no-console
+                console.log(sql);
+              }
+            },
       pool: {
         max: 5, // Reduced for Cloud Run
         min: 0, // Allow connections to close
