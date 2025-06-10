@@ -18,16 +18,16 @@ export class ConcertValidator {
         }
 
         // Validate event date
-        if (!data.eventDate || data.eventDate.trim().length === 0) {
+        if (!data.event_date || data.event_date.trim().length === 0) {
             errors.push({
-                field: 'eventDate',
+                field: 'event_date',
                 message: 'Event date is required',
             });
         } else {
-            const date = new Date(data.eventDate);
+            const date = new Date(data.event_date);
             if (isNaN(date.getTime())) {
                 errors.push({
-                    field: 'eventDate',
+                    field: 'event_date',
                     message: 'Event date must be a valid date',
                 });
             }
@@ -35,13 +35,13 @@ export class ConcertValidator {
 
         // Validate that either venue or event name is provided
         if ((!data.venue || data.venue.trim().length === 0) &&
-            (!data.eventName || data.eventName.trim().length === 0)) {
+            (!data.event_name || data.event_name.trim().length === 0)) {
             errors.push({
                 field: 'venue',
                 message: 'Either venue or event name is required',
             });
             errors.push({
-                field: 'eventName',
+                field: 'event_name',
                 message: 'Either venue or event name is required',
             });
         }
@@ -55,22 +55,22 @@ export class ConcertValidator {
         }
 
         // Validate event name length if provided
-        if (data.eventName && data.eventName.length > 255) {
+        if (data.event_name && data.event_name.length > 255) {
             errors.push({
-                field: 'eventName',
+                field: 'event_name',
                 message: 'Event name must be less than 255 characters',
             });
         }
 
         // Validate event URL
-        if (!data.eventUrl || data.eventUrl.trim().length === 0) {
+        if (!data.event_url || data.event_url.trim().length === 0) {
             errors.push({
-                field: 'eventUrl',
+                field: 'event_url',
                 message: 'Event URL is required',
             });
-        } else if (!this.isValidUrl(data.eventUrl)) {
+        } else if (!this.isValidUrl(data.event_url)) {
             errors.push({
-                field: 'eventUrl',
+                field: 'event_url',
                 message: 'Event URL must be a valid URL',
             });
         }
@@ -120,10 +120,10 @@ export class ConcertValidator {
         return {
             ...data,
             city: data.city?.trim(),
-            eventDate: data.eventDate?.trim(),
+            event_date: data.event_date?.trim(),
             venue: data.venue?.trim(),
-            eventName: data.eventName?.trim(),
-            eventUrl: data.eventUrl?.trim(),
+            event_name: data.event_name?.trim(),
+            event_url: data.event_url?.trim(),
         };
     }
 }

@@ -46,10 +46,10 @@ export interface UpdatePostRequest extends CreatePostRequest {
 
 export interface CreateConcertRequest {
   city: string;
-  eventDate: string;
+  event_date: string;
   venue?: string;
-  eventName?: string;
-  eventUrl: string;
+  event_name?: string;
+  event_url: string;
 }
 
 export interface UpdateConcertRequest extends CreateConcertRequest {

@@ -45,10 +45,10 @@ export class ConcertService {
       const concert = await Concert.create(
         {
           city: concertData.city,
-          event_date: new Date(concertData.eventDate),
+          event_date: new Date(concertData.event_date),
           venue: concertData.venue || null,
-          event_name: concertData.eventName || null,
-          event_url: concertData.eventUrl,
+          event_name: concertData.event_name || null,
+          event_url: concertData.event_url,
         },
         { transaction }
       );
@@ -76,8 +76,22 @@ export class ConcertService {
     const transaction: Transaction = await sequelize.transaction();
 
     try {
-      const concert = await Concert.findByPk(id, { transaction });
-      if (!concert) {
+      const [updatedRowsCount] = await Concert.update(
+        {
+          city: concertData.city,
+          event_date: new Date(concertData.event_date),
+          venue: concertData.venue || null,
+          event_name: concertData.event_name || null,
+          event_url: concertData.event_url,
+        },
+        {
+          where: { id },
+          transaction,
+          returning: true,
+        }
+      );
+
+      if (updatedRowsCount === 0) {
         await transaction.rollback();
         return {
           success: false,
@@ -85,22 +99,12 @@ export class ConcertService {
         };
       }
 
-      // Update concert data
-      await concert.update(
-        {
-          city: concertData.city,
-          event_date: new Date(concertData.eventDate),
-          venue: concertData.venue || null,
-          event_name: concertData.eventName || null,
-          event_url: concertData.eventUrl,
-        },
-        { transaction }
-      );
+      const updatedConcert = await Concert.findByPk(id, { transaction });
 
       await transaction.commit();
       return {
         success: true,
-        data: concert,
+        data: updatedConcert!,
       };
     } catch (error) {
       await transaction.rollback();

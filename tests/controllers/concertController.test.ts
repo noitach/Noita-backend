@@ -176,10 +176,10 @@ describe('ConcertController Integration Tests', () => {
     describe('Authentication Required Endpoints', () => {
         const validConcertData = {
             city: 'Test City',
-            eventDate: '2024-12-25',
+            event_date: '2024-12-25',
             venue: 'Test Venue',
-            eventName: 'Test Event',
-            eventUrl: 'https://example.com/test-event',
+            event_name: 'Test Event',
+            event_url: 'https://example.com/test-event',
         };
 
         it('POST /api/concerts should require authentication', async () => {
@@ -219,10 +219,10 @@ describe('ConcertController Integration Tests', () => {
         it('should validate required fields', async () => {
             const invalidConcertData = {
                 city: '', // Empty city
-                eventDate: '2024-12-25',
+                event_date: '2024-12-25',
                 venue: '', // Empty venue
-                eventName: '', // Empty event name (one of venue or event name is required)
-                eventUrl: '', // Empty URL
+                event_name: '', // Empty event name (one of venue or event name is required)
+                event_url: '', // Empty URL
             };
 
             // Test validation directly
@@ -233,46 +233,46 @@ describe('ConcertController Integration Tests', () => {
             expect(validation.errors.length).toBeGreaterThan(0);
             expect(validation.errors.some((err: any) => err.field === 'city')).toBe(true);
             expect(validation.errors.some((err: any) => err.field === 'venue')).toBe(true);
-            expect(validation.errors.some((err: any) => err.field === 'eventName')).toBe(true);
-            expect(validation.errors.some((err: any) => err.field === 'eventUrl')).toBe(true);
+            expect(validation.errors.some((err: any) => err.field === 'event_name')).toBe(true);
+            expect(validation.errors.some((err: any) => err.field === 'event_url')).toBe(true);
         });
 
         it('should validate event date format', async () => {
             const invalidConcertData = {
                 city: 'Test City',
-                eventDate: 'invalid-date',
+                event_date: 'invalid-date',
                 venue: 'Test Venue',
-                eventUrl: 'https://example.com',
+                event_url: 'https://example.com',
             };
 
             const { ConcertValidator } = await import('../../src/utils/validation/concertValidation.js');
             const validation = ConcertValidator.validateCreateConcert(invalidConcertData);
 
             expect(validation.isValid).toBe(false);
-            expect(validation.errors.some((err: any) => err.field === 'eventDate')).toBe(true);
+            expect(validation.errors.some((err: any) => err.field === 'event_date')).toBe(true);
         });
 
         it('should validate URL format', async () => {
             const invalidConcertData = {
                 city: 'Test City',
-                eventDate: '2024-12-25',
+                event_date: '2024-12-25',
                 venue: 'Test Venue',
-                eventUrl: 'not-a-url',
+                event_url: 'not-a-url',
             };
 
             const { ConcertValidator } = await import('../../src/utils/validation/concertValidation.js');
             const validation = ConcertValidator.validateCreateConcert(invalidConcertData);
 
             expect(validation.isValid).toBe(false);
-            expect(validation.errors.some((err: any) => err.field === 'eventUrl')).toBe(true);
+            expect(validation.errors.some((err: any) => err.field === 'event_url')).toBe(true);
         });
 
         it('should accept valid data with only venue', async () => {
             const validConcertData = {
                 city: 'Test City',
-                eventDate: '2024-12-25',
+                event_date: '2024-12-25',
                 venue: 'Test Venue',
-                eventUrl: 'https://example.com',
+                event_url: 'https://example.com',
             };
 
             const { ConcertValidator } = await import('../../src/utils/validation/concertValidation.js');
@@ -285,9 +285,9 @@ describe('ConcertController Integration Tests', () => {
         it('should accept valid data with only event name', async () => {
             const validConcertData = {
                 city: 'Test City',
-                eventDate: '2024-12-25',
-                eventName: 'Test Event',
-                eventUrl: 'https://example.com',
+                event_date: '2024-12-25',
+                event_name: 'Test Event',
+                event_url: 'https://example.com',
             };
 
             const { ConcertValidator } = await import('../../src/utils/validation/concertValidation.js');
@@ -300,29 +300,29 @@ describe('ConcertController Integration Tests', () => {
         it('should sanitize input data', async () => {
             const dataWithWhitespace = {
                 city: '  Test City  ',
-                eventDate: '  2024-12-25  ',
+                event_date: '  2024-12-25  ',
                 venue: '  Test Venue  ',
-                eventName: '  Test Event  ',
-                eventUrl: '  https://example.com  ',
+                event_name: '  Test Event  ',
+                event_url: '  https://example.com  ',
             };
 
             const { ConcertValidator } = await import('../../src/utils/validation/concertValidation.js');
             const sanitized = ConcertValidator.sanitizeConcertData(dataWithWhitespace);
 
             expect(sanitized.city).toBe('Test City');
-            expect(sanitized.eventDate).toBe('2024-12-25');
+            expect(sanitized.event_date).toBe('2024-12-25');
             expect(sanitized.venue).toBe('Test Venue');
-            expect(sanitized.eventName).toBe('Test Event');
-            expect(sanitized.eventUrl).toBe('https://example.com');
+            expect(sanitized.event_name).toBe('Test Event');
+            expect(sanitized.event_url).toBe('https://example.com');
         });
 
         it('should validate update data correctly', async () => {
             const invalidUpdateData = {
                 id: 'invalid',
                 city: '', // Empty city
-                eventDate: '2024-12-25',
+                event_date: '2024-12-25',
                 venue: 'Updated Venue',
-                eventUrl: 'https://example.com',
+                event_url: 'https://example.com',
             };
 
             const { ConcertValidator } = await import('../../src/utils/validation/concertValidation.js');
