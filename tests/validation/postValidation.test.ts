@@ -6,11 +6,10 @@ describe('PostValidator', () => {
     describe('validateCreatePost', () => {
         it('should pass validation with valid data', () => {
             const validData: CreatePostRequest = {
-                titleFr: 'Test Title FR',
-                titleDe: 'Test Title DE',
-                contentFr: 'Test content in French',
-                contentDe: 'Test content in German',
-                img64: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8/5+hHgAHggJ/PchI7wAAAABJRU5ErkJggg==',
+                title_fr: 'Test Title FR',
+                title_de: 'Test Title DE',
+                content_fr: 'Test content in French',
+                content_de: 'Test content in German',
             };
 
             const result = PostValidator.validateCreatePost(validData);
@@ -21,96 +20,114 @@ describe('PostValidator', () => {
 
         it('should fail validation when French title is missing', () => {
             const invalidData: CreatePostRequest = {
-                titleFr: '',
-                titleDe: 'Test Title DE',
-                contentFr: 'Test content in French',
-                contentDe: 'Test content in German',
+                title_fr: '',
+                title_de: 'Test Title DE',
+                content_fr: 'Test content in French',
+                content_de: 'Test content in German',
             };
 
             const result = PostValidator.validateCreatePost(invalidData);
 
             expect(result.isValid).toBe(false);
             expect(result.errors).toContainEqual({
-                field: 'titleFr',
+                field: 'title_fr',
                 message: 'French title is required',
             });
         });
 
         it('should fail validation when German title is missing', () => {
             const invalidData: CreatePostRequest = {
-                titleFr: 'Test Title FR',
-                titleDe: '',
-                contentFr: 'Test content in French',
-                contentDe: 'Test content in German',
+                title_fr: 'Test Title FR',
+                title_de: '',
+                content_fr: 'Test content in French',
+                content_de: 'Test content in German',
             };
 
             const result = PostValidator.validateCreatePost(invalidData);
 
             expect(result.isValid).toBe(false);
             expect(result.errors).toContainEqual({
-                field: 'titleDe',
+                field: 'title_de',
                 message: 'German title is required',
             });
         });
 
         it('should fail validation when French content is missing', () => {
             const invalidData: CreatePostRequest = {
-                titleFr: 'Test Title FR',
-                titleDe: 'Test Title DE',
-                contentFr: '',
-                contentDe: 'Test content in German',
+                title_fr: 'Test Title FR',
+                title_de: 'Test Title DE',
+                content_fr: '',
+                content_de: 'Test content in German',
             };
 
             const result = PostValidator.validateCreatePost(invalidData);
 
             expect(result.isValid).toBe(false);
             expect(result.errors).toContainEqual({
-                field: 'contentFr',
+                field: 'content_fr',
                 message: 'French content is required',
             });
         });
 
         it('should fail validation when German content is missing', () => {
             const invalidData: CreatePostRequest = {
-                titleFr: 'Test Title FR',
-                titleDe: 'Test Title DE',
-                contentFr: 'Test content in French',
-                contentDe: '',
+                title_fr: 'Test Title FR',
+                title_de: 'Test Title DE',
+                content_fr: 'Test content in French',
+                content_de: '',
             };
 
             const result = PostValidator.validateCreatePost(invalidData);
 
             expect(result.isValid).toBe(false);
             expect(result.errors).toContainEqual({
-                field: 'contentDe',
+                field: 'content_de',
                 message: 'German content is required',
             });
         });
 
-        it('should fail validation when title is too long', () => {
-            const longTitle = 'a'.repeat(256);
+        it('should fail validation when French title is too long', () => {
+            const longTitle = 'A'.repeat(256);
             const invalidData: CreatePostRequest = {
-                titleFr: longTitle,
-                titleDe: 'Test Title DE',
-                contentFr: 'Test content in French',
-                contentDe: 'Test content in German',
+                title_fr: longTitle,
+                title_de: 'Test Title DE',
+                content_fr: 'Test content in French',
+                content_de: 'Test content in German',
             };
 
             const result = PostValidator.validateCreatePost(invalidData);
 
             expect(result.isValid).toBe(false);
             expect(result.errors).toContainEqual({
-                field: 'titleFr',
+                field: 'title_fr',
                 message: 'French title must be less than 255 characters',
+            });
+        });
+
+        it('should fail validation when German title is too long', () => {
+            const longTitle = 'A'.repeat(256);
+            const invalidData: CreatePostRequest = {
+                title_fr: 'Test Title FR',
+                title_de: longTitle,
+                content_fr: 'Test content in French',
+                content_de: 'Test content in German',
+            };
+
+            const result = PostValidator.validateCreatePost(invalidData);
+
+            expect(result.isValid).toBe(false);
+            expect(result.errors).toContainEqual({
+                field: 'title_de',
+                message: 'German title must be less than 255 characters',
             });
         });
 
         it('should fail validation with invalid image format', () => {
             const invalidData: CreatePostRequest = {
-                titleFr: 'Test Title FR',
-                titleDe: 'Test Title DE',
-                contentFr: 'Test content in French',
-                contentDe: 'Test content in German',
+                title_fr: 'Test Title FR',
+                title_de: 'Test Title DE',
+                content_fr: 'Test content in French',
+                content_de: 'Test content in German',
                 img64: 'invalid-image-data',
             };
 
@@ -123,12 +140,13 @@ describe('PostValidator', () => {
             });
         });
 
-        it('should pass validation without image', () => {
+        it('should pass validation with valid image format', () => {
             const validData: CreatePostRequest = {
-                titleFr: 'Test Title FR',
-                titleDe: 'Test Title DE',
-                contentFr: 'Test content in French',
-                contentDe: 'Test content in German',
+                title_fr: 'Test Title FR',
+                title_de: 'Test Title DE',
+                content_fr: 'Test content in French',
+                content_de: 'Test content in German',
+                img64: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==',
             };
 
             const result = PostValidator.validateCreatePost(validData);
@@ -142,10 +160,10 @@ describe('PostValidator', () => {
         it('should pass validation with valid data', () => {
             const validData: UpdatePostRequest = {
                 id: '1',
-                titleFr: 'Updated Title FR',
-                titleDe: 'Updated Title DE',
-                contentFr: 'Updated content in French',
-                contentDe: 'Updated content in German',
+                title_fr: 'Updated Title FR',
+                title_de: 'Updated Title DE',
+                content_fr: 'Updated content in French',
+                content_de: 'Updated content in German',
             };
 
             const result = PostValidator.validateUpdatePost(validData);
@@ -157,10 +175,10 @@ describe('PostValidator', () => {
         it('should fail validation when ID is missing', () => {
             const invalidData: UpdatePostRequest = {
                 id: '',
-                titleFr: 'Updated Title FR',
-                titleDe: 'Updated Title DE',
-                contentFr: 'Updated content in French',
-                contentDe: 'Updated content in German',
+                title_fr: 'Updated Title FR',
+                title_de: 'Updated Title DE',
+                content_fr: 'Updated content in French',
+                content_de: 'Updated content in German',
             };
 
             const result = PostValidator.validateUpdatePost(invalidData);
@@ -175,10 +193,10 @@ describe('PostValidator', () => {
         it('should fail validation when ID is not a number', () => {
             const invalidData: UpdatePostRequest = {
                 id: 'not-a-number',
-                titleFr: 'Updated Title FR',
-                titleDe: 'Updated Title DE',
-                contentFr: 'Updated content in French',
-                contentDe: 'Updated content in German',
+                title_fr: 'Updated Title FR',
+                title_de: 'Updated Title DE',
+                content_fr: 'Updated content in French',
+                content_de: 'Updated content in German',
             };
 
             const result = PostValidator.validateUpdatePost(invalidData);
@@ -189,37 +207,58 @@ describe('PostValidator', () => {
                 message: 'Post ID must be a valid number',
             });
         });
+
+        it('should include create validation errors', () => {
+            const invalidData: UpdatePostRequest = {
+                id: '1',
+                title_fr: '', // Invalid French title
+                title_de: 'Updated Title DE',
+                content_fr: 'Updated content in French',
+                content_de: '', // Invalid German content
+            };
+
+            const result = PostValidator.validateUpdatePost(invalidData);
+
+            expect(result.isValid).toBe(false);
+            expect(result.errors.length).toBeGreaterThan(0);
+            expect(result.errors.some(error => error.field === 'title_fr')).toBe(true);
+            expect(result.errors.some(error => error.field === 'content_de')).toBe(true);
+        });
     });
 
     describe('sanitizePostData', () => {
-        it('should trim whitespace from all string fields', () => {
-            const dirtyData: CreatePostRequest = {
-                titleFr: '  Test Title FR  ',
-                titleDe: '  Test Title DE  ',
-                contentFr: '  Test content in French  ',
-                contentDe: '  Test content in German  ',
+        it('should trim whitespace from all fields', () => {
+            const dataWithWhitespace = {
+                title_fr: '  Test Title FR  ',
+                title_de: '  Test Title DE  ',
+                content_fr: '  Test content in French  ',
+                content_de: '  Test content in German  ',
             };
 
-            const sanitized = PostValidator.sanitizePostData(dirtyData);
+            const sanitized = PostValidator.sanitizePostData(dataWithWhitespace);
 
-            expect(sanitized.titleFr).toBe('Test Title FR');
-            expect(sanitized.titleDe).toBe('Test Title DE');
-            expect(sanitized.contentFr).toBe('Test content in French');
-            expect(sanitized.contentDe).toBe('Test content in German');
+            expect(sanitized.title_fr).toBe('Test Title FR');
+            expect(sanitized.title_de).toBe('Test Title DE');
+            expect(sanitized.content_fr).toBe('Test content in French');
+            expect(sanitized.content_de).toBe('Test content in German');
         });
 
-        it('should preserve other properties', () => {
-            const data: CreatePostRequest = {
-                titleFr: 'Test Title FR',
-                titleDe: 'Test Title DE',
-                contentFr: 'Test content in French',
-                contentDe: 'Test content in German',
-                img64: 'data:image/png;base64,test',
+        it('should handle UpdatePostRequest with ID', () => {
+            const updateData: UpdatePostRequest = {
+                id: '1',
+                title_fr: '  Updated Title FR  ',
+                title_de: '  Updated Title DE  ',
+                content_fr: '  Updated content in French  ',
+                content_de: '  Updated content in German  ',
             };
 
-            const sanitized = PostValidator.sanitizePostData(data);
+            const sanitized = PostValidator.sanitizePostData(updateData) as UpdatePostRequest;
 
-            expect(sanitized.img64).toBe('data:image/png;base64,test');
+            expect(sanitized.id).toBe('1');
+            expect(sanitized.title_fr).toBe('Updated Title FR');
+            expect(sanitized.title_de).toBe('Updated Title DE');
+            expect(sanitized.content_fr).toBe('Updated content in French');
+            expect(sanitized.content_de).toBe('Updated content in German');
         });
     });
 }); 

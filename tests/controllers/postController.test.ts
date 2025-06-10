@@ -172,10 +172,10 @@ describe('PostController Integration Tests', () => {
 
     describe('Authentication Required Endpoints', () => {
         const validPostData = {
-            titleFr: 'Test Post French',
-            titleDe: 'Test Post German',
-            contentFr: 'This is a test post content in French.',
-            contentDe: 'This is a test post content in German.',
+            title_fr: 'Test Post French',
+            title_de: 'Test Post German',
+            content_fr: 'This is a test post content in French.',
+            content_de: 'This is a test post content in German.',
         };
 
         it('POST /api/posts should require authentication', async () => {
@@ -214,9 +214,9 @@ describe('PostController Integration Tests', () => {
     describe('Validation Tests', () => {
         it('should validate required fields', async () => {
             const invalidPostData = {
-                titleFr: '', // Empty title
-                titleDe: 'Test Post German',
-                // Missing contentFr and contentDe
+                title_fr: '', // Empty title
+                title_de: 'Test Post German',
+                // Missing content_fr and content_de
             };
 
             // Test validation directly
@@ -224,18 +224,18 @@ describe('PostController Integration Tests', () => {
             const validation = PostValidator.validateCreatePost(invalidPostData as any);
 
             expect(validation.isValid).toBe(false);
-            expect(validation.errors).toHaveLength(3); // titleFr, contentFr, contentDe
-            expect(validation.errors.some(err => err.field === 'titleFr')).toBe(true);
-            expect(validation.errors.some(err => err.field === 'contentFr')).toBe(true);
-            expect(validation.errors.some(err => err.field === 'contentDe')).toBe(true);
+            expect(validation.errors).toHaveLength(3); // title_fr, content_fr, content_de
+            expect(validation.errors.some(err => err.field === 'title_fr')).toBe(true);
+            expect(validation.errors.some(err => err.field === 'content_fr')).toBe(true);
+            expect(validation.errors.some(err => err.field === 'content_de')).toBe(true);
         });
 
         it('should validate image format', async () => {
             const validPostData = {
-                titleFr: 'Test Post French',
-                titleDe: 'Test Post German',
-                contentFr: 'This is a test post content in French.',
-                contentDe: 'This is a test post content in German.',
+                title_fr: 'Test Post French',
+                title_de: 'Test Post German',
+                content_fr: 'This is a test post content in French.',
+                content_de: 'This is a test post content in German.',
                 img64: 'invalid-image-data'
             };
 
@@ -248,36 +248,36 @@ describe('PostController Integration Tests', () => {
 
         it('should sanitize input data', async () => {
             const dataWithWhitespace = {
-                titleFr: '  Test Post French  ',
-                titleDe: '  Test Post German  ',
-                contentFr: '  This is a test post content in French.  ',
-                contentDe: '  This is a test post content in German.  ',
+                title_fr: '  Test Post French  ',
+                title_de: '  Test Post German  ',
+                content_fr: '  This is a test post content in French.  ',
+                content_de: '  This is a test post content in German.  ',
             };
 
             const { PostValidator } = await import('../../src/utils/validation/postValidation.js');
             const sanitized = PostValidator.sanitizePostData(dataWithWhitespace);
 
-            expect(sanitized.titleFr).toBe('Test Post French');
-            expect(sanitized.titleDe).toBe('Test Post German');
-            expect(sanitized.contentFr).toBe('This is a test post content in French.');
-            expect(sanitized.contentDe).toBe('This is a test post content in German.');
+            expect(sanitized.title_fr).toBe('Test Post French');
+            expect(sanitized.title_de).toBe('Test Post German');
+            expect(sanitized.content_fr).toBe('This is a test post content in French.');
+            expect(sanitized.content_de).toBe('This is a test post content in German.');
         });
 
         it('should validate update data correctly', async () => {
             const invalidUpdateData = {
                 id: '1',
-                titleFr: '', // Empty title
-                titleDe: 'Updated German',
-                contentFr: 'Updated French content',
-                // Missing contentDe
+                title_fr: '', // Empty title
+                title_de: 'Updated German',
+                content_fr: 'Updated French content',
+                // Missing content_de
             };
 
             const { PostValidator } = await import('../../src/utils/validation/postValidation.js');
             const validation = PostValidator.validateUpdatePost(invalidUpdateData as any);
 
             expect(validation.isValid).toBe(false);
-            expect(validation.errors.some((err: any) => err.field === 'titleFr')).toBe(true);
-            expect(validation.errors.some((err: any) => err.field === 'contentDe')).toBe(true);
+            expect(validation.errors.some((err: any) => err.field === 'title_fr')).toBe(true);
+            expect(validation.errors.some((err: any) => err.field === 'content_de')).toBe(true);
         });
     });
 

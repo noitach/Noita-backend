@@ -48,10 +48,10 @@ export class PostService {
       // Create post with temporary image URL
       const post = await Post.create(
         {
-          title_fr: postData.titleFr,
-          title_de: postData.titleDe,
-          content_fr: postData.contentFr,
-          content_de: postData.contentDe,
+          title_fr: postData.title_fr,
+          title_de: postData.title_de,
+          content_fr: postData.content_fr,
+          content_de: postData.content_de,
           image_url: 'temp',
         },
         { transaction }
@@ -131,10 +131,10 @@ export class PostService {
       // Update post data
       await post.update(
         {
-          title_fr: postData.titleFr,
-          title_de: postData.titleDe,
-          content_fr: postData.contentFr,
-          content_de: postData.contentDe,
+          title_fr: postData.title_fr,
+          title_de: postData.title_de,
+          content_fr: postData.content_fr,
+          content_de: postData.content_de,
           image_url: postData.img64 ? `/images/post-${id}.png` : post.image_url,
         },
         { transaction }

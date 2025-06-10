@@ -33,10 +33,10 @@ export interface Carousel {
 
 // Request Types
 export interface CreatePostRequest {
-  titleFr: string;
-  titleDe: string;
-  contentFr: string;
-  contentDe: string;
+  title_fr: string;
+  title_de: string;
+  content_fr: string;
+  content_de: string;
   img64?: string;
 }
 

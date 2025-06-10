@@ -5,43 +5,43 @@ export class PostValidator {
         const errors: ValidationError[] = [];
 
         // Validate French title
-        if (!data.titleFr || data.titleFr.trim().length === 0) {
+        if (!data.title_fr || data.title_fr.trim().length === 0) {
             errors.push({
-                field: 'titleFr',
+                field: 'title_fr',
                 message: 'French title is required',
             });
-        } else if (data.titleFr.length > 255) {
+        } else if (data.title_fr.length > 255) {
             errors.push({
-                field: 'titleFr',
+                field: 'title_fr',
                 message: 'French title must be less than 255 characters',
             });
         }
 
         // Validate German title
-        if (!data.titleDe || data.titleDe.trim().length === 0) {
+        if (!data.title_de || data.title_de.trim().length === 0) {
             errors.push({
-                field: 'titleDe',
+                field: 'title_de',
                 message: 'German title is required',
             });
-        } else if (data.titleDe.length > 255) {
+        } else if (data.title_de.length > 255) {
             errors.push({
-                field: 'titleDe',
+                field: 'title_de',
                 message: 'German title must be less than 255 characters',
             });
         }
 
         // Validate French content
-        if (!data.contentFr || data.contentFr.trim().length === 0) {
+        if (!data.content_fr || data.content_fr.trim().length === 0) {
             errors.push({
-                field: 'contentFr',
+                field: 'content_fr',
                 message: 'French content is required',
             });
         }
 
         // Validate German content
-        if (!data.contentDe || data.contentDe.trim().length === 0) {
+        if (!data.content_de || data.content_de.trim().length === 0) {
             errors.push({
-                field: 'contentDe',
+                field: 'content_de',
                 message: 'German content is required',
             });
         }
@@ -88,24 +88,29 @@ export class PostValidator {
         };
     }
 
-    private static isValidBase64Image(imageData: string): boolean {
-        const validFormats = [
-            'data:image/jpeg;base64,',
-            'data:image/png;base64,',
-            'data:image/gif;base64,',
-            'data:image/webp;base64,',
-        ];
+    private static isValidBase64Image(base64: string): boolean {
+        try {
+            // Check if the string starts with valid image data URI prefixes
+            const validImageTypes = ['data:image/jpeg;base64,', 'data:image/png;base64,', 'data:image/gif;base64,', 'data:image/webp;base64,'];
+            const hasValidPrefix = validImageTypes.some(prefix => base64.startsWith(prefix));
 
-        return validFormats.some(format => imageData.startsWith(format));
+            if (!hasValidPrefix && !base64.match(/^[A-Za-z0-9+/]*={0,2}$/)) {
+                return false;
+            }
+
+            return true;
+        } catch {
+            return false;
+        }
     }
 
     static sanitizePostData(data: CreatePostRequest | UpdatePostRequest): CreatePostRequest | UpdatePostRequest {
         return {
             ...data,
-            titleFr: data.titleFr?.trim(),
-            titleDe: data.titleDe?.trim(),
-            contentFr: data.contentFr?.trim(),
-            contentDe: data.contentDe?.trim(),
+            title_fr: data.title_fr?.trim(),
+            title_de: data.title_de?.trim(),
+            content_fr: data.content_fr?.trim(),
+            content_de: data.content_de?.trim(),
         };
     }
 }
