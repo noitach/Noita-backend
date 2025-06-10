@@ -24,6 +24,7 @@ env:
   BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
   CLOUD_RUN_SERVICE_NAME: noita-backend
   CLOUD_RUN_SERVICE_ACCOUNT: ${{ vars.CLOUD_RUN_SERVICE_ACCOUNT }}
+  CLOUD_SQL_PROXY_IMAGE: gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.16.0
 
 jobs:
   test:
@@ -68,6 +69,9 @@ jobs:
           service_account: ${{ env.SERVICE_ACCOUNT }}
           audience: "https://github.com/noitach"
 
+      - name: Set up Cloud SDK
+        uses: google-github-actions/setup-gcloud@v2
+
       - name: Login to Google Artifact Registry
         uses: docker/login-action@74a5d142397b4f367a81961eba4e8cd7edddf772 # ratchet:docker/login-action@v3
         with:
@@ -105,39 +109,33 @@ jobs:
 
       - name: Deploy to Cloud Run
         id: deploy
-        uses: google-github-actions/deploy-cloudrun@1ec29da1351112c7904fb60454a55e3e1021a51c # ratchet:google-github-actions/deploy-cloudrun@v2
-        with:
-          service: ${{ env.CLOUD_RUN_SERVICE_NAME }}
-          region: ${{ env.GCP_REGION }}
-          image: ${{ steps.extract-tag.outputs.sha_tag }}
-          flags: |
-            '--platform=managed'
-            '--service-account=${{ env.CLOUD_RUN_SERVICE_ACCOUNT }}'
-            '--allow-unauthenticated'
-            '--execution-environment=gen2'
-            '--cpu-boost'
-            '--max-instances=1'
-            '--ingress=all'
-            '--add-volume=name=images,type=cloud-storage,bucket=${{ env.BUCKET_NAME }}'
-
-            '--container=cloud-sql-proxy'
-            '--image=gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.16.0'
-            '--cpu=1'
-            '--memory=128Mi'
-            '--args=--address=0.0.0.0,--port=5432,--structured-logs,${{ env.CLOUDSQL_INSTANCE }}'
-            '--startup-probe=timeoutSeconds=1,periodSeconds=10,failureThreshold=3,tcpSocket.port=5432'
-
-            '--container=app'
-            "--image=${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:$SHORT_SHA"
-            '--set-env-vars=DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080'
-            '--set-secrets=DB_PASS=DB_PASS:latest,DB_USER=DB_USER:latest,DB_NAME=DB_NAME:latest'
-            '--cpu=1'
-            '--memory=512Mi'
-            '--port=8080'
-            '--add-volume-mount=volume=images,mount-path=/app/public/images'
-
-            '--startup-probe=initialDelaySeconds=10,periodSeconds=10,failureThreshold=3,tcpSocket.port=8080'
-            '--depends-on=cloud-sql-proxy'
+        run: |
+          gcloud run deploy ${{ env.CLOUD_RUN_SERVICE_NAME }} \
+            --region ${{ env.GCP_REGION }} \
+            --platform managed \
+            --service-account ${{ env.CLOUD_RUN_SERVICE_ACCOUNT }} \
+            --allow-unauthenticated \
+            --execution-environment=gen2 \
+            --cpu-boost \
+            --max-instances=1 \
+            --ingress=all \
+            --add-volume=name=images,type=cloud-storage,bucket=${{ env.BUCKET_NAME }} \
+            --container=cloud-sql-proxy \
+            --image=${{ env.CLOUD_SQL_PROXY_IMAGE }} \
+            --cpu=1 \
+            --memory=128Mi \
+            --args=--address=0.0.0.0,--port=5432,--structured-logs,${{ env.CLOUDSQL_INSTANCE }} \
+            --startup-probe=timeoutSeconds=1,periodSeconds=10,failureThreshold=3,tcpSocket.port=5432 \
+            --container=app \
+            --image=${{ steps.extract-tag.outputs.sha_tag }} \
+            --set-env-vars=DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080 \
+            --set-secrets=DB_PASS=DB_PASS:latest,DB_USER=DB_USER:latest,DB_NAME=DB_NAME:latest \
+            --cpu=1 \
+            --memory=512Mi \
+            --port=8080 \
+            --add-volume-mount=volume=images,mount-path=/app/public/images \
+            --startup-probe=initialDelaySeconds=10,periodSeconds=10,failureThreshold=3,tcpSocket.port=8080 \
+            --depends-on=cloud-sql-proxy
 
       - name: Show deployment URL
         run: echo "Deployed to ${{ steps.deploy.outputs.url }}"
