@@ -63,6 +63,7 @@ jobs:
         id: auth
         uses: google-github-actions/auth@6fc4af4b145ae7821d527454aa9bd537d1f2dc5f # ratchet:google-github-actions/auth@v2
         with:
+          token_format: access_token
           workload_identity_provider: ${{ env.WIF_PROVIDER }}
           service_account: ${{ env.SERVICE_ACCOUNT }}
           audience: "https://github.com/noitach"
