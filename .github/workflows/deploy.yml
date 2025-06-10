@@ -8,14 +8,22 @@ on:
 
 env:
   NODE_VERSION: "24"
+
+  SERVICE_ACCOUNT: ${{ vars.SERVICE_ACCOUNT }}
+  SHORT_SHA: ${{ github.sha }}
+
   GCP_PROJECT_ID: ${{ vars.GCP_PROJECT_ID }}
   GCP_REGION: ${{ vars.GCP_REGION }}
-  SERVICE_NAME: noita-backend
+  WIF_PROVIDER: ${{ vars.WIF_PROVIDER }}
+
   ARTIFACT_REGISTRY: ${{ vars.GCP_REGION }}-docker.pkg.dev
   ARTIFACT_REPOSITORY: ${{ vars.ARTIFACT_REPOSITORY }}
   DOCKER_IMAGE: noita-backend
-  WIF_PROVIDER: ${{ vars.WIF_PROVIDER }}
-  SERVICE_ACCOUNT: ${{ vars.SERVICE_ACCOUNT }}
+
+  CLOUDSQL_INSTANCE: ${{ secrets.CLOUDSQL_INSTANCE }}
+  BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+  CLOUD_RUN_SERVICE_NAME: noita-backend
+  CLOUD_RUN_SERVICE_ACCOUNT: ${{ vars.CLOUD_RUN_SERVICE_ACCOUNT }}
 
 jobs:
   test:
@@ -73,11 +81,10 @@ jobs:
         id: meta
         uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804 # ratchet:docker/metadata-action@v5
         with:
-          images: ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}
+          images: ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REPOSITORY }}/${{ env.DOCKER_IMAGE }}
           tags: |
-            type=ref,event=branch
-            type=sha,prefix={{branch}}-
-            type=raw,value=latest,enable={{is_default_branch}}
+            type=sha
+            type=raw,value=latest
 
       - name: Build and push Docker image
         uses: docker/build-push-action@ca052bb54ab0790a636c9b5f226502c73d547a25 # ratchet:docker/build-push-action@v5
@@ -94,23 +101,37 @@ jobs:
         id: deploy
         uses: google-github-actions/deploy-cloudrun@1ec29da1351112c7904fb60454a55e3e1021a51c # ratchet:google-github-actions/deploy-cloudrun@v2
         with:
-          service: ${{ env.SERVICE_NAME }}
+          service: ${{ env.CLOUD_RUN_SERVICE_NAME }}
           region: ${{ env.GCP_REGION }}
-          image: ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.SERVICE_NAME }}:latest
+          image: ${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT_ID }}/${{ env.REPOSITORY }}/${{ env.DOCKER_IMAGE }}:latest
           flags: |
-            --port=8080
-            --memory=1Gi
-            --cpu=1
-            --min-instances=0
-            --max-instances=10
-            --allow-unauthenticated
-            --set-env-vars=NODE_ENV=production
-          secrets: |
-            DB_HOST=${{ secrets.DB_HOST }}:latest
-            DB_PORT=${{ secrets.DB_PORT }}:latest
-            DB_NAME=${{ secrets.DB_NAME }}:latest
-            DB_USER=${{ secrets.DB_USER }}:latest
-            DB_PASS=${{ secrets.DB_PASS }}:latest
+            '--platform=managed'
+            '--service-account=${{ env.CLOUD_RUN_SERVICE_ACCOUNT }}'
+            '--allow-unauthenticated'
+            '--execution-environment=gen2'
+            '--cpu-boost'
+            '--max-instances=1'
+            '--ingress=all'
+            '--add-volume=name=images,type=cloud-storage,bucket=${{ env.BUCKET_NAME }}'
+
+            '--container=cloud-sql-proxy'
+            '--image=gcr.io/cloud-sql-connectors/cloud-sql-proxy:2.16.0'
+            '--cpu=1'
+            '--memory=128Mi'
+            '--args=--address=0.0.0.0,--port=5432,--structured-logs,${{ env.CLOUDSQL_INSTANCE }}'
+            '--startup-probe=timeoutSeconds=1,periodSeconds=10,failureThreshold=3,tcpSocket.port=5432'
+
+            '--container=app'
+            "--image=${{ env.ARTIFACT_REGISTRY }}/${{ env.GCP_PROJECT_ID }}/${{ env.ARTIFACT_REPOSITORY }}/${{ env.DOCKER_IMAGE }}:$SHORT_SHA"
+            '--set-env-vars=DB_SSL=false,DB_HOST=127.0.0.1,SERVER_PORT=8080'
+            '--set-secrets=DB_PASS=DB_PASS:latest,DB_USER=DB_USER:latest,DB_NAME=DB_NAME:latest'
+            '--cpu=1'
+            '--memory=512Mi'
+            '--port=8080'
+            '--add-volume-mount=volume=images,mount-path=/app/public/images'
+
+            '--startup-probe=initialDelaySeconds=10,periodSeconds=10,failureThreshold=3,tcpSocket.port=8080'
+            '--depends-on=cloud-sql-proxy'
 
       - name: Show deployment URL
         run: echo "Deployed to ${{ steps.deploy.outputs.url }}"
