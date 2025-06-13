@@ -258,7 +258,7 @@ export class CarouselService {
       const originalBPosition = pictureB.position;
 
       // Use temporary position to avoid unique constraint violation
-      await pictureA.update({ position: 1000 }, { transaction });
+      await pictureA.update({ position: 0 }, { transaction });
       await pictureB.update({ position: originalAPosition }, { transaction });
       await pictureA.update({ position: originalBPosition }, { transaction });
 
