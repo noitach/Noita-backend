@@ -7,6 +7,7 @@ export interface Post {
   title_de: string;
   content_fr: string;
   content_de: string;
+  displayed_date: Date;
   image_url: string;
   created_at: Date;
   updated_at: Date;
@@ -37,6 +38,7 @@ export interface CreatePostRequest {
   title_de: string;
   content_fr: string;
   content_de: string;
+  displayed_date: string;
   img64?: string;
 }
 
