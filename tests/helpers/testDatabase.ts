@@ -54,12 +54,26 @@ export async function seedTestData(sequelize: Sequelize): Promise<void> {
   await sequelize.query(`
         INSERT INTO "post" ("title_fr", "title_de", "content_fr", "content_de", "displayed_date", "image_url", "created_at", "updated_at") 
         VALUES
-          ('Merci Vertantzt !', 'Danke, Vertantzt !', 'C''était incroyable ! Merci pour votre formidable écoute ! On était ravies de vous présenter Noïta 👏
-          À l''année prochaine !?!', 'Es war unglaublich! Danke für''s enthusiastische Zuhören! Wir haben uns mega gefreut, euch Noïta zu zeigen 👏
-          Bis nächstes Jahr !?', '2024-07-20 23:05:19.261+02', '/images/post-1.png', '2024-07-22 23:05:19.261+02', '2024-07-22 23:05:19.261+02'),
-          ('Galotti Bandnacht, on arrive !', 'Galotti Bandnacht, wir kommen !', 'Répétition générale aujourd''hui, il fait chaud sous le Hardbrücke ! On vous prépare un set aux petits oignons et même un featuring surprise 🙂!
-          Venetz !', 'Generalprobe heute. Es wird heisst unter der Hardbrücke ! Wir basteln euch ein mega cooles Set zusammen, sogar mit einem Überraschungs Featuring 🙂!
-          Venetz !', '2024-09-06 23:05:19.261+02', '/images/post-2.png', '2024-09-10 23:05:19.261+02', '2024-09-10 23:05:19.261+02');
+          ( 
+            'Merci Vertantzt !', 
+            'Danke, Vertantzt !', 
+            'C''était incroyable ! Merci pour votre formidable écoute ! On était ravies de vous présenter Noïta 👏 À l''année prochaine !?!', 
+            'Es war unglaublich! Danke für''s enthusiastische Zuhören! Wir haben uns mega gefreut, euch Noïta zu zeigen 👏 Bis nächstes Jahr !?', 
+            '2024-07-20 23:05:19.261+02', 
+            '/images/post-1.png', 
+            '2024-07-22 23:05:19.261+02', 
+            '2024-07-22 23:05:19.261+02'
+          ),
+          (
+            'Galotti Bandnacht, on arrive !', 
+            'Galotti Bandnacht, wir kommen !', 
+            'Répétition générale aujourd''hui, il fait chaud sous le Hardbrücke ! On vous prépare un set aux petits oignons et même un featuring surprise 🙂! Venetz !', 
+            'Generalprobe heute. Es wird heisst unter der Hardbrücke ! Wir basteln euch ein mega cooles Set zusammen, sogar mit einem Überraschungs Featuring 🙂! Venetz !', 
+            '2024-09-06 23:05:19.261+02', 
+            '/images/post-2.png', 
+            '2024-09-10 23:05:19.261+02', 
+            '2024-09-10 23:05:19.261+02'
+          );
     `);
 }
 
