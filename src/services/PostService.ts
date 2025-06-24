@@ -52,6 +52,7 @@ export class PostService {
           title_de: postData.title_de,
           content_fr: postData.content_fr,
           content_de: postData.content_de,
+          displayed_date: new Date(postData.displayed_date),
           image_url: 'temp',
         },
         { transaction }
@@ -135,6 +136,7 @@ export class PostService {
           title_de: postData.title_de,
           content_fr: postData.content_fr,
           content_de: postData.content_de,
+          displayed_date: new Date(postData.displayed_date),
           image_url: postData.img64 ? `/images/post-${id}.png` : post.image_url,
         },
         { transaction }

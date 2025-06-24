@@ -16,6 +16,7 @@ export class Post extends Model<
   declare title_de: string;
   declare content_fr: string;
   declare content_de: string;
+  declare displayed_date: Date;
   declare image_url: string;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -29,6 +30,7 @@ export class Post extends Model<
       title_de: values.title_de,
       content_fr: values.content_fr,
       content_de: values.content_de,
+      displayed_date: values.displayed_date,
       image_url: values.image_url,
       created_at: values.createdAt,
       updated_at: values.updatedAt,
@@ -71,6 +73,13 @@ Post.init(
       allowNull: false,
       validate: {
         notEmpty: true,
+      },
+    },
+    displayed_date: {
+      type: DataTypes.DATE,
+      allowNull: false,
+      validate: {
+        isDate: true,
       },
     },
     image_url: {
