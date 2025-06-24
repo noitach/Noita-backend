@@ -17,7 +17,7 @@ VALUES
   ('Röthenbach Im Emmental',	'2024-07-20',	'',	'Vertanzt Festival',	'https://www.vertanzt.ch/',	'2024-09-10 20:44:36.653+02',	'2024-09-10 20:46:55.468+02');
 
 INSERT INTO 
-  "post" ("title_fr", "title_de", "content_fr", "content_de", "display_date", "image_url", "created_at", "updated_at")
+  "post" ("title_fr", "title_de", "content_fr", "content_de", "displayed_date", "image_url", "created_at", "updated_at")
   VALUES
   (
     'Merci Vertantzt !',	

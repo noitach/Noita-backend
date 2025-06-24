@@ -25,7 +25,7 @@ CREATE TABLE IF NOT EXISTS "post" (
   "title_de" text NOT NULL,
   "content_fr" text NOT NULL,
   "content_de" text NOT NULL,
-  "display_date" timestamptz NOT NULL DEFAULT now(),
+  "displayed_date" timestamptz NOT NULL DEFAULT now(),
   "image_url" text NOT NULL,
   "created_at" timestamptz NOT NULL DEFAULT now(),
   "updated_at" timestamptz
